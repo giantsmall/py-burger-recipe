@@ -6,10 +6,10 @@ class Validator(ABC):
     def __set_name__(self, owner: any, name: str) -> None:
         self.protected_name = "_" + name
         print(f"validator: name = {self.protected_name}")
-    
+
     def __get__(self) -> int:
         return self._value
-    
+
     def __set__(self, value: int, third: any = 0) -> None:
         self.validate(value)
         self._value = value
@@ -18,6 +18,7 @@ class Validator(ABC):
 
     def validate(self) -> None:
         pass
+
 
 class Number(Validator):
     def __init__(self, min_value: int, max_value: int) -> None:
@@ -29,7 +30,10 @@ class Number(Validator):
         if not isinstance(value, int):
             raise TypeError("Quantity should be integer")
         elif self.min_value > self._value or self.max_value < self._value:
-            raise ValueError(f"Quantity should not be less than {self.min_value} and greater than {self.max_value}")
+            raise ValueError(f"Quantity should not be less than \
+                             {self.min_value} \
+                             and greater than {self.max_value}")
+
 
 class OneOf(Validator):
     def __init__(self, options: list) -> None:
@@ -41,7 +45,13 @@ class OneOf(Validator):
 
 
 class BurgerRecipe:
-    def __init__(self, buns: int, cheese: int, tomatoes: int, cutlest: int, eggs: int, sauce: str) -> None:
+    def __init__(self,
+                 buns: int,
+                 cheese: int,
+                 tomatoes: int,
+                 cutlest: int,
+                 eggs: int,
+                 sauce: str) -> None:
         self.buns = buns
         self.cheese = cheese
         self.tomatoes = tomatoes
