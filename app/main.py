@@ -6,22 +6,17 @@ class Validator(ABC):
     def __set_name__(self, owner: any, name: str) -> None:
         self.protected_name = "_" + name
 
-    def __get__(self, value: any, value2: any) -> int:
+    def __get__(self) -> any:
         return self._value
 
-    def __set__(self, value: int, third: any = 0) -> None:
-        try:
-            self.validate(value)
-            self._value = value
-        except TypeError as error:
-            print(error)
-        except ValueError as error:
-            print(error)
-
-    value = property(__get__, __set__)
+    def __set__(self, owner: any, value: int) -> None:
+        self.validate(value)
+        self._value = value
+    
+    _value = property(__get__, __set__)
 
     @abstractmethod
-    def validate(self) -> None:
+    def validate(self, value) -> None:
         pass
 
 
@@ -29,15 +24,13 @@ class Number(Validator):
     def __init__(self, min_value: int, max_value: int) -> None:
         self.min_value = min_value
         self.max_value = max_value
-        self._value = 5
 
     def validate(self, value: int) -> None:
         if not isinstance(value, int):
-            raise TypeError(f"Quantity should be integer: {type(value)}")
-        elif self.min_value > self._value or self.max_value < self._value:
-            raise ValueError(f"Quantity should not be less than \
-                             attribute minvalue \
-                             and greater than attribute maxvalue.")
+            raise TypeError(f"Quantity should be integer.")
+        elif self.min_value > value or self.max_value < value:
+            print(f"Validating {value}")
+            raise ValueError(f"Quantity should not be less than attribute minvalue and greater than attribute maxvalue.")
 
 
 class OneOf(Validator):
@@ -54,16 +47,19 @@ class BurgerRecipe:
                  buns: int,
                  cheese: int,
                  tomatoes: int,
-                 cutlest: int,
+                 cutlet: int,
                  eggs: int,
                  sauce: str) -> None:
-        print(type(buns))
         self.buns = buns
         self.cheese = cheese
         self.tomatoes = tomatoes
-        self.cutlets = cutlest
+        self.cutlets = cutlet
         self.eggs = eggs
         self.sauce = sauce
+
+    @staticmethod
+    def __dict__() -> dict:
+        return {"1": 2}
 
     buns = Number(2, 3)
     cheese = Number(0, 2)
@@ -72,4 +68,4 @@ class BurgerRecipe:
     eggs = Number(0, 2)
     sauce = OneOf(["ketchup", "mayo", "burger"])
 
-burger = BurgerRecipe(1, 2, 2, 2, 2, "ketchup")
+burger = BurgerRecipe(2,2,2,2,2, "ketchup")
